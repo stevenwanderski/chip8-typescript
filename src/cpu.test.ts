@@ -112,5 +112,38 @@ describe('Cpu', () => {
         expect(cpu.vr[2]).toEqual(0x3);
       });
     });
+
+    describe('Annn', () => {
+      it('sets ir to nnn', () => {
+        cpu.ir = 0x1;
+
+        cpu.decode(0xA202);
+
+        expect(cpu.ir).toEqual(0x202);
+      });
+    });
+
+    describe('Dxyn', () => {
+      it('sets ir to nnn', () => {
+        cpu.ir = 0x202;
+        cpu.ram[0x202] = 0xA1
+        cpu.ram[0x203] = 0xB2
+        cpu.ram[0x204] = 0xC3
+        cpu.vr[1] = 1;
+        cpu.vr[2] = 0;
+
+        cpu.decode(0xD123);
+
+        expect(cpu.screen[0]).toEqual(0);
+        expect(cpu.screen[1]).toEqual(1);
+        expect(cpu.screen[2]).toEqual(0);
+        expect(cpu.screen[3]).toEqual(1);
+        expect(cpu.screen[4]).toEqual(0);
+        expect(cpu.screen[5]).toEqual(0);
+        expect(cpu.screen[6]).toEqual(0);
+        expect(cpu.screen[7]).toEqual(0);
+        expect(cpu.screen[8]).toEqual(1);
+      });
+    });
   });
 })

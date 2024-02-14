@@ -78,16 +78,44 @@ export class Cpu {
             break;
         }
 
-      case 1:
+      case 0x1:
         this.pc = o.nnn;
         break;
 
-      case 6:
+      case 0x6:
         this.vr[o.x] = o.nn;
         break;
 
-      case 7:
+      case 0x7:
         this.vr[o.x] += o.nn;
+        break;
+
+      case 0xA:
+        this.ir = o.nnn;
+        break;
+
+      case 0xD:
+        for (let i = 0; i < o.n; i++) {
+          const byte = this.ram[this.ir + i];
+
+          for (let j = 0; j < 8; j++) {
+            if ((byte & (0b10000000 >> j)) != 0) {
+              const xPosition = (this.vr[o.x]+j) % SCREEN_WIDTH
+              const yPosition = (this.vr[o.y]+i) % SCREEN_HEIGHT
+
+              const screenIndex = (yPosition * SCREEN_WIDTH) + xPosition;
+
+              if (this.screen[screenIndex] == 1) {
+                this.vr[0xF] = 1
+              } else {
+                this.vr[0xF] = 0
+              }
+
+              this.screen[screenIndex] ^= 1;
+            }
+          }
+        }
+
         break;
 
       default:
